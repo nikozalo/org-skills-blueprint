@@ -1,8 +1,9 @@
 // Every plugin whose files changed must carry a higher version than the base.
 //
-// Cowork's organization marketplace only syncs a plugin when its version goes up
-// on main, and Claude Code pins to the same string, so a change without a higher
-// version never reaches anyone.
+// Claude Code updates an installed plugin only when its version changes, so a
+// change without a higher version never reaches the people who use it there.
+// Cowork syncs every push to main either way; the bump keeps the two in step and
+// names each change in CHANGELOG.md and the release tags.
 //
 //   node tools/check_versions.mjs <base> [<head>] [--on-main]
 //
@@ -118,13 +119,13 @@ for (const dir of dirs) {
   const was = readManifest(baseSha, file)
   const nowV = now.version, wasV = was.version
   console.log(`${dir}: ${baseName} ${wasV || '(none)'}, ${headSha ? 'head' : 'working tree'} ${nowV || '(none)'}`)
-  if (now.missing || now.invalid || !nowV) { fail(file, 'plugin.json is missing, unreadable or has no version. Cowork will never sync this plugin.'); continue }
+  if (now.missing || now.invalid || !nowV) { fail(file, 'plugin.json is missing, unreadable or has no version. Give it one: installed copies update when it goes up.'); continue }
   if (!SEMVER.test(nowV)) { fail(file, `version ${JSON.stringify(nowV)} is not MAJOR.MINOR.PATCH.`); continue }
   if (!wasV) { console.log(`  ok: new plugin at ${nowV}`); continue }
   if (!SEMVER.test(wasV)) { console.log(`  ok: ${baseName} has a version that is not semver (${wasV}); ${nowV} replaces it`); continue }
   if (compare(nowV, wasV) > 0) { console.log(`  ok: ${wasV} -> ${nowV}`); continue }
   fail(file, onMain
-    ? `Files under ${dir}/ changed on main but the version went from ${wasV} to ${nowV}, not up. Cowork will not sync this change and Claude Code will not update to it. Open a pull request now that raises the version above ${wasV}.`
+    ? `Files under ${dir}/ changed on main but the version went from ${wasV} to ${nowV}, not up. Claude Code will not update installed copies to this change. Open a pull request now that raises the version above ${wasV}.`
     : `Files under ${dir}/ changed but the version is ${nowV}, and ${baseName} already has ${wasV}. Raise it above ${wasV} so installed copies receive this change.`)
 }
 

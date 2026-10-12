@@ -44,6 +44,15 @@ scope. If they are not listed, sign in to GitHub with read access to this reposi
 `/plugin marketplace add acme-org/acme-skills`, then `/plugin install <plugin>@acme-skills` for
 each plugin you need.
 
+**Developers whose Claude Code is not signed in to the organization's claude.ai account** (an API
+key, Bedrock, Vertex) don't get the plugins from the organization settings. Deliver
+`managed-settings.example.json` as Claude Code managed settings (**Organization settings → Claude
+Code → Managed settings**, an MDM policy, or a `managed-settings.json` file): it registers this
+marketplace with auto-update on and installs `acme` for everyone. Each machine clones the private
+repository with its own git credentials, so those developers need read access. Someone who gets a
+plugin both ways loads the managed copy. Details:
+<https://code.claude.com/docs/en/plugins/org>.
+
 ## Contributing
 
 Run `/acme:contribute` in Claude Code, with the GitHub command-line tool `gh` signed in. It
@@ -88,15 +97,17 @@ Evals, before merging a change to a skill: `claude plugin eval plugins/<name> --
   higher version, for example two pull requests that both raised 0.1.0 to 0.1.1.
 - Add the pull request's "What people will notice" line under the new version in `CHANGELOG.md`.
 - After a push to main, `release.yml` tags each plugin whose version changed as
-  `<plugin>-v<version>`, for example `acme-v0.2.0`.
+  `<plugin>--v<version>`, for example `acme--v0.2.0`: the format Claude Code resolves version
+  ranges in plugin dependencies against.
 
 ### How updates reach people
 
-- **Cowork**, with automatic sync on: the organization marketplace follows main, and syncs a
-  plugin only after a merged change raises its version. An owner can also click **Update** in the
-  marketplace settings.
-- **Claude Code** pins to the version string. People with auto-update on get it when Claude Code
-  starts; others run `/plugin marketplace update acme-skills`.
+- **Cowork**, with automatic sync on: every merge to main syncs the organization marketplace,
+  usually within 30 minutes. An owner can also select **Re-sync** on the marketplace.
+- **Claude Code** updates an installed plugin only when its version changes. Plugins synced from
+  the organization's claude.ai account update with it. For the marketplace added with
+  `/plugin marketplace add`, auto-update is off by default: people turn it on in `/plugin` or run
+  `/plugin marketplace update acme-skills`, and managed settings can turn it on for everyone.
 - A change to `baseline.md` reaches a person only when they re-run `/acme:setup`, so announce it.
 
 To try a branch first, add the checkout as a local marketplace in Claude Code

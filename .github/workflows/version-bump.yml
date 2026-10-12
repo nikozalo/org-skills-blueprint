@@ -1,8 +1,10 @@
 name: version bump required
 
-# Cowork's organization marketplace only syncs a plugin when a change that raises its version is
-# merged to main; changes without a higher version are ignored. Claude Code pins to the version
-# string too. So any change under plugins/<name>/ must raise that plugin's version, or nobody gets it.
+# Claude Code updates an installed plugin only when its version changes, so any change under
+# plugins/<name>/ must raise that plugin's version, or people using the plugin in Claude Code never
+# get it. Cowork's organization sync runs on every push to main either way (some of Anthropic's
+# support pages still say it waits for a version bump; raising it on every change covers both). The
+# version also names each change in CHANGELOG.md and the release tags.
 #
 # The comparison is tools/check_versions.mjs, by semver. Locally:
 #   git fetch origin main && node tools/check_versions.mjs origin/main

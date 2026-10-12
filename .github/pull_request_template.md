@@ -6,7 +6,7 @@
 
 ## Version
 
-- [ ] Every plugin touched under `plugins/<name>/` has its `version` in `.claude-plugin/plugin.json` raised above the version on `main` (Cowork only syncs a merged change that raises it; CI checks this against the live `main`)
+- [ ] Every plugin touched under `plugins/<name>/` has its `version` in `.claude-plugin/plugin.json` raised above the version on `main` (Claude Code only updates installed copies when it goes up; CI checks this against the live `main`)
 - [ ] `CHANGELOG.md` has the "What people will notice" line under each new version
 
 ## Review

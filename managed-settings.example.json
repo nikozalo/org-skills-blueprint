@@ -1,0 +1,11 @@
+{
+  "extraKnownMarketplaces": {
+    "acme-skills": {
+      "source": { "source": "github", "repo": "acme-org/acme-skills" },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": {
+    "acme@acme-skills": true
+  }
+}

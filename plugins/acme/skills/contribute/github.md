@@ -56,7 +56,7 @@ A 403 or 404 here, after the access check passed, means read-only access: switch
 
 ## 4. Raise the plugin's version
 
-Cowork only picks up a change when the plugin's version goes up, and a check on the pull request
+Claude Code only updates installed copies when the plugin's version goes up, and a check on the pull request
 fails until it does. So once per pull request, for each plugin it changes (any file under
 `plugins/<plugin>/`), raise that plugin's patch version. A change to the docs alone needs none.
 

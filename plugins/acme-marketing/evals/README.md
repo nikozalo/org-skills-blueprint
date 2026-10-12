@@ -14,3 +14,4 @@ not in CI.
 |---|---|
 | `vc-findings` | The banned word, the second exclamation mark, the Title Case heading and "ACME" are each found, with their rule numbers, and the draft is not rewritten |
 | `vc-clean` | A draft that follows the guide is reported Ready, with no findings invented |
+| `vc-not-translation` | Should not fire: asked for a translation, Claude translates and the skill is never called |

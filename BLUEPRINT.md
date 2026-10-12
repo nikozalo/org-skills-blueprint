@@ -24,8 +24,10 @@ names. Delete this file once you have adopted it.
   (`acme-marketing`). People add the plugins they need; each plugin has an owner, named by role.
 - **The org syncs it.** An organization owner connects the repo once in the Claude organization
   settings. Members need no GitHub account to use the skills.
-- **A version bump or nobody gets it.** Cowork syncs a plugin only when a merged change raises its
-  version, and Claude Code pins to the version string. CI enforces the bump, against the live main.
+- **Every change raises the version.** Cowork syncs the marketplace on every merge to main, but
+  Claude Code updates an installed plugin only when its version changes, so a change without a
+  bump never reaches people there. The version also names each change in the changelog and the
+  release tags. CI enforces the bump, against the live main.
 - **Contributing is a skill.** `/acme:contribute` interviews the person, collects redacted
   examples, drafts the skill and its docs page, and opens the pull request through `gh api` (no
   clone, no git, no branches to understand). Without GitHub access it writes a handoff folder to
@@ -33,6 +35,43 @@ names. Delete this file once you have adopted it.
 - **Shared context is copied, not injected.** `/acme:setup` writes the org's baseline plus the
   person's role into their instructions (Cowork's Global instructions, or `~/.claude/CLAUDE.md`).
   No hooks and nothing running in the background; a change reaches people when they re-run it.
+
+## Is this the right setup for you?
+
+Checked against Anthropic's docs in October 2026. A private repository synced in Organization
+settings, plus Claude Code managed settings for developers who don't sign in with the
+organization's account, is the route Anthropic documents for rolling out plugins an organization
+builds itself ([Roll out a plugin to your whole organization](https://claude.com/docs/plugins/org-rollout)).
+It earns its keep once several people write skills and you want review, history and tests. Other
+routes are simpler in other cases:
+
+| Situation | Simpler route |
+|---|---|
+| A handful of skills, written by one or two people | An Owner uploads each skill as a zip in **Organization settings > Plugins & skills** (Team and Enterprise). It reaches every member at once, on by default and in Claude Code too, with no GitHub ([Provision and manage skills](https://support.claude.com/en/articles/13119606-provision-and-manage-skills-for-your-organization)) |
+| People want to pass a skill to colleagues | Share it with named colleagues from **Customize**, or publish it to the organization's library, where an Owner can require review first ([Share a plugin with teammates](https://claude.com/docs/plugins/share)) |
+| A skill that only makes sense in one codebase | Commit it to that repository's `.claude/skills/`; it arrives with `git pull` ([Skills in Claude Code](https://code.claude.com/docs/en/skills)) |
+| Agents you build on the Claude API | Upload skills to the API workspace (`/v1/skills`); they don't sync with claude.ai ([Skills guide](https://platform.claude.com/docs/en/build-with-claude/skills-guide)) |
+
+Facts this design rests on, from those docs:
+
+- **The repository must be private** (or internal) for organization sync on github.com.
+- **Organization sync runs on every push to the default branch**, or when an Owner selects
+  **Re-sync**, and reads no tags. Some of Anthropic's support pages still say it waits for a
+  merged version bump; raising the version on every change covers both.
+- **Claude Code updates an installed plugin only when its version changes.** Members signed in
+  with the organization's claude.ai account (Claude Code 2.1.273 or later) get the organization's
+  plugins synced; anyone else needs the marketplace registered, which `managed-settings.example.json`
+  does. Auto-update is off by default for marketplaces that aren't Anthropic's.
+- **Release tags are `<plugin>--v<version>`**, the format Claude Code resolves version ranges in
+  plugin dependencies against.
+- **The skills themselves are portable.** A `SKILL.md` folder follows the open Agent Skills format
+  ([agentskills.io](https://agentskills.io)), which other tools read too; the plugin and
+  marketplace around it are Claude's.
+- **Review is yours to set up.** Anthropic's guidance for organizations ([Skills for
+  enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise))
+  asks for an owner per skill, a reviewer who isn't the author, git as the source of truth, and
+  evals that check a skill fires when it should and stays quiet when it shouldn't. This repository
+  does all four. On Enterprise, Anthropic also scans skills and plugins for security issues.
 
 ## What is in the box
 
@@ -43,11 +82,12 @@ names. Delete this file once you have adopted it.
 | `plugins/acme/skills/contribute/` | The contribution flow: new skill, fix, rule change, PR follow-up and review |
 | `plugins/acme/skills/meeting-notes/` | An example everyday skill: fixed output template, evidence rules, empty results are valid |
 | `plugins/acme-marketing/` | An example team plugin: the team's rules in `references/voice-guide.md`, owned by a role, read by the skill |
-| `plugins/*/evals/` | Smoke tests in `claude plugin eval` format, run by hand |
+| `plugins/*/evals/` | Smoke tests in `claude plugin eval` format, run by hand: each skill fires when it should and stays quiet on a near miss |
 | `tools/check_skills.mjs` | Skill frontmatter as Cowork checks it on upload |
 | `tools/check_versions.mjs` | Every changed plugin has a higher version than main |
 | `tools/scan_data.mjs` | No real e-mail addresses, account numbers, keys or tokens in a plugin |
-| `.github/workflows/` | Checks on every PR, the version-bump gate, and `<plugin>-v<version>` release tags |
+| `.github/workflows/` | Checks on every PR, the version-bump gate, and `<plugin>--v<version>` release tags |
+| `managed-settings.example.json` | Claude Code managed settings for developers who don't sign in with the organization's account: registers the marketplace, turns on auto-update, installs the core plugin |
 | `docs/` | A Vocs docs site for non-technical staff: install, one page per skill, contribute; plugin zips for manual install; an optional password gate for Vercel. Colours and the mark: `docs/AUTHORING.md`, "The look" |
 
 ## Adopt it
@@ -71,7 +111,10 @@ names. Delete this file once you have adopted it.
    `claude plugin validate . --strict` and once per plugin, then `cd docs && bun install && bun run build`.
 5. **Push to a private GitHub repo.** Private matters: Cowork does not accept a public repository
    as an organization marketplace.
-6. **Connect it.** An owner of the Claude organization follows "Install" in `README.md`.
+6. **Connect it.** An owner of the Claude organization follows "Install" in `README.md`. For
+   developers whose Claude Code isn't signed in with the organization's account, also deliver
+   `managed-settings.example.json` as Claude Code managed settings; they need read access to the
+   repository.
 7. **Announce `/<slug>:setup`** and the help channel. Then let people contribute.
 
 Optional: deploy `docs/` (Vercel, Root Directory `docs`, `DOCS_PASSWORD` set), or delete `docs/`,

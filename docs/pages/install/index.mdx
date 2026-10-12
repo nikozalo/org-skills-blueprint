@@ -57,7 +57,7 @@ Once, in each app you use: Cowork does not read Claude Code's settings. Type `/a
 
 ## How updates reach you
 
-- **Claude Cowork:** automatically. When a change that raises a plugin's version number is merged, Cowork syncs it for the whole organization.
+- **Claude Cowork:** automatically. When a change is merged, Cowork syncs it for the whole organization, usually within 30 minutes.
 - **Claude Code, plugins you found by searching in `/plugin`:** they come from your Acme account and update with it, like Cowork.
 - **Claude Code, plugins you added from GitHub:** auto-update is off by default for marketplaces that are not Anthropic's. Turn it on: `/plugin`, **Marketplaces**, `acme-skills`, **Enable auto-update**. Or run `/plugin marketplace update acme-skills` when a change is announced.
 - **The shared Acme context:** `/acme:setup` copies it into your instructions, so a change reaches you only when you run `/acme:setup` again. Changes are announced.

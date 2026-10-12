@@ -21,7 +21,7 @@ In **Organization settings → Plugins & skills**, open **Marketplaces**, click 
 Set every plugin to **Available to install**. People add the ones they need themselves: they search for **Acme** in **Customize → Plugins** in Cowork, or in `/plugin` in Claude Code.
 
 ### Turn on automatic sync
-Cowork then syncs when a pull request that raises a plugin's version number is merged into the branch it follows.
+Cowork then syncs every time a change is merged into the default branch, usually within 30 minutes. To sync at once, an Owner selects **Re-sync** on the marketplace.
 
 ### Add the connectors the skills use
 Under **Organization settings → Connectors**, so members can connect them instead of seeing **Request**: Google Drive, for transcripts and drafts kept there.
@@ -30,6 +30,10 @@ Under **Organization settings → Connectors**, so members can connect them inst
 :::warning
 Keep the repository private. Cowork does not accept a public repository as an organization marketplace.
 :::
+
+### Developers on Claude Code
+
+Members who sign in to Claude Code with their Acme claude.ai account (Claude Code 2.1.273 or later) get the same plugins there, synced from their account. For developers who use Claude Code another way, such as with an API key, deliver `managed-settings.example.json` from the repository as Claude Code managed settings: **Organization settings → Claude Code → Managed settings**, an MDM policy, or a `managed-settings.json` file. It registers the marketplace with auto-update on and installs Acme for everyone. Each machine clones the private repository with its own git credentials, so these developers need read access to it. Details: [Manage Claude Code plugins for your organization](https://code.claude.com/docs/en/plugins/org).
 
 ### What the install settings do
 
@@ -44,11 +48,12 @@ Keep the repository private. Cowork does not accept a public repository as an or
 | `plugins/<name>/skills/<skill>/SKILL.md` | One folder per skill |
 | `plugins/<name>/references/` | A team's rules, owned by the team, read by its skills |
 | `plugins/<name>/evals/` | Test cases, run by hand with `claude plugin eval` |
+| `managed-settings.example.json` | Claude Code managed settings for developers whose Claude Code is not signed in to the organization's account |
 | `docs/` | This site |
 
 ## Every change bumps the version
 
-Every change under `plugins/<name>/` raises `version` in that plugin's `plugin.json` in the same pull request. Cowork syncs only when a pull request carrying a version bump is merged to `main`, and Claude Code pins to the same string. If a contributor's pull request fails the version check, add the bump yourself. Put what people will notice, in plain words, in the root `CHANGELOG.md`; the pull request template asks for it too.
+Every change under `plugins/<name>/` raises `version` in that plugin's `plugin.json` in the same pull request. Cowork syncs every merge to `main`, but Claude Code updates an installed plugin only when its version changes, so a change without a bump never reaches people there. If a contributor's pull request fails the version check, add the bump yourself. Put what people will notice, in plain words, in the root `CHANGELOG.md`; the pull request template asks for it too.
 
 ## Checks
 
@@ -63,7 +68,7 @@ claude plugin validate . --strict  # and once per plugin directory
 cd docs && bun run build && node scripts/check-words.mjs
 ```
 
-`version-bump.yml` compares against the live `main`, and `release.yml` tags each new version on `main` as `<plugin>-v<version>`.
+`version-bump.yml` compares against the live `main`, and `release.yml` tags each new version on `main` as `<plugin>--v<version>`, the format Claude Code resolves dependency version ranges against.
 
 ## Landing a proposal folder
 

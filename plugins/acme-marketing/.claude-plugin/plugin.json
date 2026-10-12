@@ -1,6 +1,6 @@
 {
   "name": "acme-marketing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "displayName": "Acme Marketing",
   "description": "Marketing's skills for Acme: /acme-marketing:voice-check checks a draft against Acme's voice guide and lists every line that breaks it, with a suggested fix. The guide lives in this plugin and the Marketing lead owns it.",
   "author": {

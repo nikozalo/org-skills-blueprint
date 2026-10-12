@@ -1,7 +1,9 @@
 name: release tags
 
-# After every push to main, tag each plugin whose version changed as <plugin>-v<version>, for
-# example acme-v0.2.0, on the commit that shipped it. CHANGELOG.md says in plain words what each
+# After every push to main, tag each plugin whose version changed as <plugin>--v<version>, for
+# example acme--v0.2.0, on the commit that shipped it. That is the format Claude Code resolves
+# version ranges in plugin dependencies against (`claude plugin tag` makes the same tag by hand):
+# https://code.claude.com/docs/en/plugins/dependencies. CHANGELOG.md says in plain words what each
 # version changed; the tags say which commit it was.
 #
 # Only this job may write to the repository, and only tags.
@@ -48,7 +50,7 @@ jobs:
             fi
             if [ -z "$now" ] || [ "$now" = "$was" ]; then continue; fi
 
-            tag="$plugin-v$now"
+            tag="$plugin--v$now"
             if existing=$(git rev-parse -q --verify "refs/tags/$tag^{commit}"); then
               if [ "$existing" != "$AFTER" ]; then
                 echo "::warning file=$manifest::$tag already exists on ${existing:0:7}; left as it is. A version number should be used once."
