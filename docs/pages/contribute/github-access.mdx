@@ -1,0 +1,39 @@
+---
+title: Get GitHub access
+description: Set up once so Claude can open pull requests for you. Contributing runs in Claude Code, signed in to GitHub.
+---
+
+# Get GitHub access
+
+Contributing runs in **Claude Code**: the Code tab of the Claude desktop app, a terminal or a code editor. Claude Cowork cannot send changes to GitHub. Without GitHub access, contributing still works: Claude writes a folder for you to post in **#acme-ai** ([Contribute](/contribute#without-github-access)).
+
+`/acme:contribute` checks all of this each time and helps with whatever is missing.
+
+::::steps
+### Create a GitHub account
+At [github.com/signup](https://github.com/signup), with your Acme email address. Then turn on two-factor authentication: your profile picture, **Settings → Password and authentication → Enable two-factor authentication**. Keep the recovery codes somewhere safe.
+
+### Ask to be added as a contributor
+In **#acme-ai** on Slack. You will be able to propose changes; approving and merging stays with the reviewers.
+
+```txt
+Hi, please add my GitHub account <your-username> as a contributor to acme-org/acme-skills, without merge rights.
+```
+
+### Open Claude Code
+In the Claude desktop app, click the **Code** tab, choose any folder to work in, and sign in with your Acme Claude account.
+
+### Sign in to GitHub
+Run `/acme:contribute`. The first time, it installs the GitHub command-line tool if it is missing, and asks you to type this in the prompt box yourself:
+
+```txt
+! gh auth login --web --hostname github.com --git-protocol https
+```
+
+Copy the one-time code it shows, finish in the browser, and come back. Claude checks you can reach the repository.
+::::
+
+:::details[If something goes wrong]
+- **Homebrew missing on a Mac:** the command-line tool installs with Homebrew, from [brew.sh](https://brew.sh). Or ask in **#acme-ai**.
+- **Windows:** after the tool is installed, close Claude Code, open it again, and run `/acme:contribute` once more.
+:::

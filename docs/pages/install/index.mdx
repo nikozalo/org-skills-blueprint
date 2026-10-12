@@ -1,0 +1,76 @@
+---
+title: Start here
+description: What Acme Skills are, how to get them in Claude Cowork or Claude Code, and running /acme:setup once.
+---
+
+# Start here
+
+Acme Skills make Claude do Acme's repeatable work the same way for everyone, in Claude Cowork and Claude Code.
+
+- **A skill** is a set of written instructions for one task, such as turning a transcript into the Acme meeting record. Type `/` and its name, such as `/acme:meeting-notes`, or in Cowork just ask. [Skills overview](/skills).
+- **A plugin** is a set of skills you install together. Acme is for everyone; Acme Marketing is for the people who write for Marketing. When a skill changes, everyone gets the update.
+- **Contribute** when a skill gets something wrong or you have one to share: `/acme:contribute` drafts it and the owner reviews it. [How contributing works](/contribute).
+
+To get started, add Acme in the app you use (search for **Acme**) and run `/acme:setup` once. Then read [Tips for using Claude](/claude).
+
+## Claude Cowork
+
+For most people. No GitHub account needed.
+
+::::steps
+### Add Acme
+In the Claude desktop app, open the **Cowork** tab, then **Customize → Plugins**. Search for **Acme** and add **Acme**.
+
+### Add the plugins your work needs
+In the same search, add **Acme Marketing** if your work needs it. [The plugins](#the-plugins) says who each is for.
+::::
+
+No Acme plugins in the search? Download them and upload them yourself: [Manual install](/install/manual). Or ask in **#acme-ai** on Slack.
+
+## Claude Code
+
+For the terminal, a code editor, or the Code tab of the desktop app. Sign in with your Acme Claude account: `/status` shows the account, and `/login` switches it. Then type `/plugin`, search for **Acme**, and install **acme**, plus **acme-marketing** if your work needs it. Choose **Install for you (user scope)** so the skills work in every folder. Type `/acme` to check: the skills are listed.
+
+If the search shows no Acme plugins, upload them on claude.ai and Claude Code loads them from your account: [Manual install](/install/manual). Or add them from GitHub. That needs your GitHub sign-in, because the repository is private: [Get GitHub access](/contribute/github-access) first. Then, in a session:
+
+```txt
+/plugin marketplace add acme-org/acme-skills
+/plugin install acme@acme-skills
+/plugin install acme-marketing@acme-skills
+```
+
+Run the first line once. Then run the `install` line of each plugin you need, one at a time, choosing **Install for you (user scope)**.
+
+## The plugins
+
+| Plugin | For | Who adds it |
+|---|---|---|
+| Acme (`acme`) | Setup, meeting notes, contributing | Everyone |
+| Acme Marketing (`acme-marketing`) | Checking a draft against Acme's voice guide | Anyone who writes for Marketing |
+
+## Run /acme:setup
+
+Once, in each app you use: Cowork does not read Claude Code's settings. Type `/acme:setup`. It asks only about your role: your team, your title, what you are accountable for, who you work with and how you like output. Type **skip** for anything you would rather not answer.
+
+- **Claude Cowork:** no skill can change your settings, so it gives you a block of text. Open **Settings → Cowork**, click **Edit** next to **Global instructions**, paste it below anything already there, and **Save**. If an older Acme block is there, replace only that block. It applies from your next task.
+- **Claude Code:** it backs up `~/.claude/CLAUDE.md`, shows you the change and asks you to confirm before it writes the Acme block between two markers. Nothing else in the file changes. `/context` then lists the file under **Memory files**.
+
+## How updates reach you
+
+- **Claude Cowork:** automatically. When a change that raises a plugin's version number is merged, Cowork syncs it for the whole organization.
+- **Claude Code, plugins you found by searching in `/plugin`:** they come from your Acme account and update with it, like Cowork.
+- **Claude Code, plugins you added from GitHub:** auto-update is off by default for marketplaces that are not Anthropic's. Turn it on: `/plugin`, **Marketplaces**, `acme-skills`, **Enable auto-update**. Or run `/plugin marketplace update acme-skills` when a change is announced.
+- **The shared Acme context:** `/acme:setup` copies it into your instructions, so a change reaches you only when you run `/acme:setup` again. Changes are announced.
+
+## If something is wrong
+
+- **A skill is missing.** Check you added its plugin: search for **Acme** in **Customize → Plugins** in Cowork, or in `/plugin` in Claude Code. Then start a new task or session. Still missing? Ask in **#acme-ai**.
+- **A connector shows Request.** An organization owner has to add it first. Ask in **#acme-ai**.
+- **You want to fix or propose a skill from Cowork.** Contributing runs in Claude Code. Without it, Claude writes a folder for you to post: [Contribute](/contribute).
+
+:::details[Words you'll see]
+- **Skill:** written instructions that make Claude do one task the same way every time. Type `/` and its name, such as `/acme:meeting-notes`.
+- **Plugin:** a set of skills installed together, such as Acme Marketing (`acme-marketing`).
+- **Marketplace:** where the plugins come from. Acme's is `acme-skills`, one private GitHub repository.
+- **Connector:** lets Claude read another tool, such as Google Drive, and sometimes write to it. An organization owner adds connectors; you connect yours in **Customize → Connectors**.
+:::

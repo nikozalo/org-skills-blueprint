@@ -1,0 +1,37 @@
+{
+  "name": "acme-skills",
+  "owner": {
+    "name": "Acme Skills",
+    "url": "https://github.com/acme-org/acme-skills"
+  },
+  "description": "Shared Claude context and skills for Acme: a plugin for everyone, and one plugin per team that has its own rules.",
+  "plugins": [
+    {
+      "name": "acme",
+      "displayName": "Acme",
+      "source": "./plugins/acme",
+      "description": "Shared Acme context and skills for everyone: /acme:setup, meeting notes, and /acme:contribute to fix or propose a skill.",
+      "category": "productivity",
+      "keywords": [
+        "acme",
+        "setup",
+        "meeting-notes",
+        "contribute"
+      ]
+    },
+    {
+      "name": "acme-marketing",
+      "displayName": "Acme Marketing",
+      "source": "./plugins/acme-marketing",
+      "description": "Marketing's skills: check a draft against Acme's voice guide before it goes out. The Marketing lead owns the guide.",
+      "category": "productivity",
+      "keywords": [
+        "acme",
+        "marketing",
+        "brand",
+        "voice",
+        "copy"
+      ]
+    }
+  ]
+}

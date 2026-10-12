@@ -1,0 +1,584 @@
+/* Theme for the Vocs 2.10 chrome: a glass sidebar with the search at its top, a thin rail down
+   the page list, the "On this page" outline pinned to the right edge, and one canvas with a
+   soft wash. Indigo and violet, with a coral highlight; Plus Jakarta Sans for text and IBM Plex
+   Mono for code (loaded in vocs.config.ts).
+
+   TO MAKE IT YOURS: change the tokens in (a), the accent colour in vocs.config.ts, the hero
+   gradient and art colours in styles/site.css, and public/icon.svg. --site-team-label is the
+   small label beside the site name.
+
+   HOW THESE RULES WIN: Vocs puts its styles in named @layers. This file is unlayered, so a
+   plain declaration here beats any layered Vocs rule without !important. Selectors target
+   Vocs 2.10's data-v-* attributes (node_modules/vocs/dist/react/*); re-check them when
+   upgrading Vocs.
+
+   DO NOT set transform / opacity / visibility on [data-v-gutter-top]: Vocs owns those as
+   inline styles (mobile hide-on-scroll). */
+
+/* ------------------------------------------------------------------ */
+/* (a) Tokens                                                          */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --site-team-label: "AI team";
+
+  --site-primary: #4338CA;
+  --site-primary-2: #7C5CE0;
+  --site-ink: #17163A;
+  --site-mist: #EEF0FF;
+  --site-line: #DCDFFB;
+  --site-coral: #FF9E7A;
+
+  --site-accent: var(--vocs-color-accent);
+
+  /* Geometry */
+  --site-edge-inset: 16px;
+  --site-radius-panel: 16px;
+  --site-max-gap: 50px;
+  --site-sidebar-x: max(
+    var(--site-edge-inset),
+    calc(var(--vocs-spacing-gutter) - var(--site-max-gap)
+         - (var(--vocs-spacing-sidebar) - var(--site-edge-inset)))
+  );
+
+  /* A fixed measure (about 80 characters of Plus Jakarta Sans at 16px). In ch it grows with
+     the wide font and runs under the right-pinned outline. */
+  --vocs-spacing-content: calc(720px + 2 * var(--vocs-spacing-content-px));
+  --site-outline-w: 248px;
+
+  /* Glass */
+  --site-blur-pill: 20px;
+  --site-blur-panel: 14px;
+  --site-saturate: 160%;
+  --site-glass-bg:        light-dark(rgba(255, 255, 255, 0.58), rgba(24, 22, 58, 0.55));
+  --site-glass-bg-strong: light-dark(rgba(255, 255, 255, 0.8), rgba(24, 22, 58, 0.82));
+  --site-glass-border:    light-dark(rgba(23, 22, 58, 0.09), rgba(220, 223, 251, 0.11));
+  --site-glass-highlight: light-dark(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.06));
+  --site-glass-shadow:    0 8px 24px light-dark(rgba(23, 22, 58, 0.07), rgba(0, 0, 0, 0.35));
+
+  --site-card-bg:      light-dark(rgba(255, 255, 255, 0.72), rgba(238, 240, 255, 0.045));
+  --site-card-bg-deep: light-dark(rgba(238, 240, 255, 0.9), rgba(238, 240, 255, 0.08));
+
+  /* One canvas; the wash in (g) paints above it */
+  --site-page-bg: light-dark(#F7F7FC, #0C0B1D);
+  --site-wash-a: rgba(67, 56, 202, 0.06);
+  --site-wash-b: rgba(124, 92, 224, 0.04);
+  --site-wash-c: rgba(255, 158, 122, 0.06);
+
+  --site-rail: light-dark(#DCDFFB, #2A2858);
+
+  --vocs-spacing-topNav: 68px;
+}
+
+:root[data-vocs-theme="dark"] {
+  --site-wash-a: rgba(67, 56, 202, 0.18);
+  --site-wash-b: rgba(124, 92, 224, 0.07);
+  --site-wash-c: rgba(255, 158, 122, 0.03);
+}
+
+@media (width < 1080px) {
+  :root {
+    --vocs-spacing-topNav: 60px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* (b) Type                                                            */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --vocs-font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --vocs-font-family-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --vocs-text-color-heading: light-dark(#17163A, #EEEDFF);
+  --vocs-text-color-primary: light-dark(#26254A, #D5D4F0);
+  --vocs-text-color-secondary: light-dark(#535278, #A6A5CB);
+  --vocs-text-color-muted: light-dark(#67668C, #9A99BF);
+}
+
+[data-v-content] :is(h1, h2) {
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+[data-v-content] h1 {
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  line-height: 1.08;
+}
+[data-v-content] h3 {
+  letter-spacing: -0.015em;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------ */
+/* (c) Layout re-pin + one canvas                                      */
+/* ------------------------------------------------------------------ */
+
+html {
+  background-color: var(--site-page-bg);
+}
+[data-v-surface-bg] {
+  display: none;
+}
+[data-v-gutter-left] {
+  background: transparent;
+  justify-content: flex-start;
+}
+[data-v-gutter-logo] {
+  justify-content: flex-start;
+  width: fit-content;
+  pointer-events: none;
+}
+[data-v-gutter-logo] a {
+  pointer-events: auto;
+}
+[data-v-gutter-logo] > [data-v-logo] {
+  width: fit-content;
+  padding-left: calc(var(--site-sidebar-x) + var(--vocs-spacing-sidebar-px));
+}
+
+/* The logo: the mark (public/icon.svg), the site name from vocs.config.ts, and the team label.
+   The name is text, so it uses the web font and follows a rename. */
+[data-v-logo]:has(> [data-v-logo-text]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+[data-v-logo-text] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+}
+[data-v-logo-text]::before {
+  content: "";
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 7px;
+  background: url("/icon.svg") center / contain no-repeat;
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+[data-v-logo]:has(> [data-v-logo-text])::after {
+  content: var(--site-team-label);
+  padding: 0.15rem 0 0.15rem 0.7rem;
+  border-left: 1px solid var(--site-glass-border);
+  color: var(--vocs-text-color-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+/* On hover or focus the mark turns a quarter and the label shimmers from the accent to coral
+   and back. Every colour on the way is AA as text on the canvas, and the first and last frames
+   are the label's own colour, so nothing jumps. */
+a:is(:hover, :focus-visible) > [data-v-logo] > [data-v-logo-text]::before {
+  transform: rotate(90deg);
+}
+a:is(:hover, :focus-visible) > [data-v-logo]:has(> [data-v-logo-text])::after {
+  background: linear-gradient(
+      100deg,
+      var(--vocs-text-color-secondary) 0 36%,
+      var(--site-accent) 44%,
+      light-dark(#B4502A, var(--site-coral)) 50%, /* coral, darker on light for AA */
+      var(--site-accent) 56%,
+      var(--vocs-text-color-secondary) 64% 100%
+    )
+    100% 0 / 300% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: site-logo-shimmer 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes site-logo-shimmer {
+  to { background-position: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  a:is(:hover, :focus-visible) > [data-v-logo] > [data-v-logo-text]::before {
+    transform: none;
+  }
+  a:is(:hover, :focus-visible) > [data-v-logo]:has(> [data-v-logo-text])::after {
+    animation: none;
+    background: none;
+    -webkit-text-fill-color: currentColor;
+    color: var(--site-accent);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* (d) Phones: a slim floating pill top bar with the search and menu   */
+/* ------------------------------------------------------------------ */
+
+[data-v-gutter-top] {
+  top: calc(var(--vocs-spacing-banner) + 8px);
+  height: 44px;
+  left: 12px;
+  right: 12px;
+  width: auto;
+  padding: 0 12px;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--site-glass-border);
+  border-radius: 9999px;
+  background: var(--site-glass-bg);
+  -webkit-backdrop-filter: blur(var(--site-blur-pill)) saturate(var(--site-saturate));
+  backdrop-filter: blur(var(--site-blur-pill)) saturate(var(--site-saturate));
+  box-shadow: inset 0 1px 0 var(--site-glass-highlight), var(--site-glass-shadow);
+}
+/* In the pill the mark is enough */
+[data-v-gutter-top] [data-v-logo-text] {
+  font-size: 1rem;
+}
+[data-v-gutter-top] [data-v-logo]::after {
+  display: none;
+}
+
+/* Desktop: no top bar. The logo sits at the top of the left column, the search under it
+   (pages/_slots.tsx), then the sidebar. The bar stays mounted (hidden) so its Cmd+K shortcut
+   still opens the search. */
+@media (width >= 1080px) {
+  :root {
+    --vocs-spacing-topNav: 64px;
+  }
+  [data-v-gutter-top] {
+    display: none;
+  }
+}
+
+@media (width >= 768px) {
+  [data-v-gutter-top-left] > div:last-child {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    height: 34px;
+    flex-shrink: 1;
+    min-width: 170px;
+  }
+  [data-v-gutter-top-left] button {
+    height: 34px;
+    border-radius: 9999px;
+    border-color: var(--site-glass-border);
+    background: light-dark(rgba(255, 255, 255, 0.6), rgba(238, 240, 255, 0.06));
+  }
+  [data-v-gutter-top-left] button:hover {
+    background: light-dark(rgba(255, 255, 255, 0.9), rgba(238, 240, 255, 0.1));
+  }
+  [data-v-gutter-top-left] button > div:last-child > div {
+    background: transparent;
+    border-color: var(--site-glass-border);
+  }
+}
+
+[data-v-gutter-top] button[aria-label="Search"][class*="size-8"] {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* ------------------------------------------------------------------ */
+/* (e) Sidebar: one thin rail down the left; the current page is an   */
+/* accent segment on the rail with accent bold text; section names are */
+/* bold and the pages under them indented.                             */
+/* ------------------------------------------------------------------ */
+
+@media (width >= 1080px) {
+  [data-v-sidebar-container] {
+    width: calc(var(--vocs-spacing-sidebar) - var(--site-edge-inset));
+    height: auto;
+    max-height: calc(100vh - var(--vocs-spacing-topNav) - var(--site-edge-inset));
+    align-self: flex-start;
+    margin-left: var(--site-sidebar-x);
+    padding-top: 1.25rem;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    scrollbar-width: none;
+  }
+  [data-v-sidebar-container]::-webkit-scrollbar {
+    display: none;
+  }
+  [data-v-sidebar-curtain],
+  [data-v-sidebar-footer-curtain] {
+    display: none;
+  }
+  /* The list scrolls on its own and the footer (GitHub, theme) sits under it in the flow, so
+     it never covers the last items and the rail simply ends where the list ends. */
+  [data-v-sidebar-container] {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  [data-v-sidebar-container] > nav[data-v-sidebar] {
+    position: relative; /* offsetTop of items is measured from here (SidebarFollow) */
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+    /* when the list is longer than the window it scrolls; fade the edge instead of cutting a
+       line in half */
+    padding-bottom: 1.5rem;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 2rem), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 2rem), transparent);
+  }
+  [data-v-sidebar-container] > nav[data-v-sidebar]::-webkit-scrollbar {
+    display: none;
+  }
+  [data-v-sidebar-footer] {
+    position: static;
+    flex: none;
+    margin: 0.9rem 0 0;
+  }
+  [data-v-sidebar-footer-content] {
+    background: transparent;
+    border: 0;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    padding: 0 0 0.5rem;
+  }
+  [data-v-sidebar-footer-content] [aria-label="Theme selection"] {
+    background: transparent;
+  }
+}
+
+/* The rail: one continuous line down the whole list */
+nav[data-v-sidebar] {
+  /* The rail is painted inside the list (a scrolling list clips anything drawn on its own
+     border), so the active item's border can sit exactly on top of it. */
+  background: linear-gradient(var(--site-rail), var(--site-rail)) left top / 2px 100% no-repeat;
+  gap: 0;
+  /* Vocs colours the active item with text-accent8 marked !important in its own layer, which
+     no unlayered rule can beat; point the variable at the accent. */
+  --vocs-color-accent8: var(--site-accent);
+}
+nav[data-v-sidebar] [data-v-sidebar-section] {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+nav[data-v-sidebar] > [data-v-sidebar-section] + [data-v-sidebar-section],
+nav[data-v-sidebar] > [data-v-sidebar-item] + [data-v-sidebar-section] {
+  margin-top: 0.55rem;
+}
+nav[data-v-sidebar] [data-v-sidebar-section-content] {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  gap: 0;
+}
+
+/* Every row sits on the rail */
+nav[data-v-sidebar] :is([data-v-sidebar-item], [data-v-sidebar-section-header]) {
+  display: flex;
+  margin: 0;
+  padding: 0.32rem 0.5rem 0.32rem 1rem;
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  line-height: 1.35;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+/* Section names and top-level pages: bold, heading colour */
+nav[data-v-sidebar] [data-v-sidebar-section-header],
+nav[data-v-sidebar] > [data-v-sidebar-item] {
+  color: var(--vocs-text-color-heading);
+  font-size: 0.94rem;
+  font-weight: 600;
+}
+nav[data-v-sidebar] [data-v-sidebar-section-header] {
+  cursor: default;
+}
+nav[data-v-sidebar] [data-v-sidebar-section-header][data-collapsable="true"] {
+  cursor: pointer;
+}
+
+/* Pages under a section: indented, smaller, muted */
+nav[data-v-sidebar] [data-v-sidebar-section-content] > [data-v-sidebar-item] {
+  padding-left: 1.75rem;
+  color: var(--vocs-text-color-secondary);
+  font-size: 0.87rem;
+  font-weight: 400;
+}
+/* A section inside a section: one step further in */
+nav[data-v-sidebar] [data-v-sidebar-section-content] [data-v-sidebar-section] [data-v-sidebar-section-header] {
+  padding-left: 1.75rem;
+  font-size: 0.87rem;
+}
+nav[data-v-sidebar] [data-v-sidebar-section-content] [data-v-sidebar-section] [data-v-sidebar-section-content] > [data-v-sidebar-item] {
+  padding-left: 2.5rem;
+}
+
+nav[data-v-sidebar] [data-v-sidebar-item]:hover {
+  color: var(--site-accent);
+}
+
+/* The current page: an accent segment on the rail, accent bold text */
+nav[data-v-sidebar] [data-v-sidebar-item][data-active] {
+  border-left-color: var(--site-accent);
+  background: none;
+  color: var(--site-accent);
+  font-weight: 700;
+}
+/* The section holding the current page: accent name */
+nav[data-v-sidebar] [data-v-sidebar-section]:has([data-v-sidebar-item][data-active]) > [data-v-sidebar-section-header] {
+  color: var(--site-accent);
+}
+
+/* Collapse arrows, if a group is ever made collapsible: quiet */
+nav[data-v-sidebar] [data-v-sidebar-section-header] > div:last-child {
+  opacity: 0.55;
+}
+
+/* Theme toggle and menus as glass */
+[aria-label="Theme selection"] {
+  background: var(--site-glass-bg);
+  border-color: var(--site-glass-border);
+}
+[aria-label="Theme selection"] [data-checked] {
+  background: color-mix(in oklab, var(--site-accent) 18%, transparent);
+  border-color: var(--site-glass-border);
+}
+[class*="min-w-[200px]"],
+[class*="w-(--anchor-width)"] {
+  background: var(--site-glass-bg-strong);
+  -webkit-backdrop-filter: blur(var(--site-blur-panel)) saturate(var(--site-saturate));
+  backdrop-filter: blur(var(--site-blur-panel)) saturate(var(--site-saturate));
+  border-color: var(--site-glass-border);
+}
+[data-v-mobile-nav] [class*="bg-surface"][class*="rounded-md"] {
+  background: var(--site-glass-bg);
+  border-color: var(--site-glass-border);
+}
+
+/* ------------------------------------------------------------------ */
+/* (f) "On this page" outline pinned right                             */
+/* ------------------------------------------------------------------ */
+
+@media (width >= 1376px) {
+  [data-v-outline][data-v-gutter-right] {
+    align-items: flex-end;
+    padding-right: max(
+      calc(var(--site-edge-inset) + 4px),
+      calc(var(--vocs-spacing-gutter) - var(--site-max-gap) - var(--site-outline-w))
+    );
+  }
+  [data-v-outline][data-v-gutter-right] > * {
+    width: var(--site-outline-w);
+    max-width: 100%;
+  }
+}
+[data-v-outline-mobile] {
+  width: fit-content;
+  margin-top: 8px;
+  margin-left: var(--vocs-spacing-content-px);
+  padding: 6px 14px;
+  border: 1px solid var(--site-glass-border);
+  border-radius: 999px;
+  background: var(--site-glass-bg);
+  -webkit-backdrop-filter: blur(var(--site-blur-pill)) saturate(var(--site-saturate));
+  backdrop-filter: blur(var(--site-blur-pill)) saturate(var(--site-saturate));
+  box-shadow: var(--site-glass-shadow);
+}
+[data-v-outline-popup] {
+  background: var(--site-glass-bg-strong);
+  -webkit-backdrop-filter: blur(var(--site-blur-panel)) saturate(var(--site-saturate));
+  backdrop-filter: blur(var(--site-blur-panel)) saturate(var(--site-saturate));
+  border-color: var(--site-glass-border);
+}
+
+/* ------------------------------------------------------------------ */
+/* (g) Wash behind everything                                          */
+/* ------------------------------------------------------------------ */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(145deg, var(--site-wash-a) 0%, var(--site-wash-b) 55%, var(--site-wash-c) 100%);
+}
+
+/* ------------------------------------------------------------------ */
+/* (h) Surfaces on the one canvas                                      */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --vocs-background-color-inline-code: var(--site-card-bg-deep);
+  --vocs-color-background2: var(--site-card-bg);
+  --vocs-color-background: var(--site-card-bg-deep);
+  --vocs-background-color-primary: var(--site-page-bg);
+  --vocs-text-color-link: var(--vocs-color-accent7, var(--site-accent));
+  --vocs-text-color-link-hover: var(--vocs-color-accent6, var(--site-accent));
+}
+
+/* Overlays */
+[data-v-mobile-nav] {
+  background: var(--site-glass-bg-strong);
+  -webkit-backdrop-filter: blur(24px) saturate(var(--site-saturate));
+  backdrop-filter: blur(24px) saturate(var(--site-saturate));
+}
+div[role="dialog"]:not([data-v-mobile-nav]):not([data-v-outline-popup]):not(.site-lightbox) {
+  background: var(--site-glass-bg-strong);
+  -webkit-backdrop-filter: blur(24px) saturate(var(--site-saturate));
+  backdrop-filter: blur(24px) saturate(var(--site-saturate));
+}
+
+/* ------------------------------------------------------------------ */
+/* (k) Fallbacks                                                       */
+/* ------------------------------------------------------------------ */
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  [data-v-gutter-top],
+  [data-v-sidebar-container],
+  [data-v-mobile-nav],
+  div[role="dialog"]:not([data-v-mobile-nav]):not([data-v-outline-popup]):not(.site-lightbox) {
+    background: light-dark(rgba(251, 251, 254, 0.97), rgba(20, 18, 46, 0.97));
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --site-glass-bg: light-dark(rgba(251, 251, 254, 0.98), rgba(20, 18, 46, 0.98));
+    --site-glass-bg-strong: var(--site-glass-bg);
+  }
+  [data-v-gutter-top],
+  [data-v-sidebar-container],
+  [data-v-sidebar-footer-content],
+  [data-v-mobile-nav],
+  div[role="dialog"] {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  body::before {
+    display: none;
+  }
+}
+
+/* No AI search is configured, so hide Vocs' built-in "Ask AI" bar everywhere. */
+[data-v-ask-ai-container] {
+  display: none;
+}
+
+/* The search at the top of the sidebar (pages/_slots.tsx) */
+.site-sidebar-search {
+  padding-right: 0.5rem;
+}
+.site-sidebar-search button {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--site-rail);
+  border-radius: 9999px;
+  background: light-dark(#FFFFFF, rgba(238, 240, 255, 0.06));
+  color: var(--vocs-text-color-muted);
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.site-sidebar-search button:hover {
+  border-color: var(--site-accent);
+  background: light-dark(#FFFFFF, rgba(238, 240, 255, 0.1));
+}
+.site-sidebar-search button > div:last-child > div {
+  background: transparent;
+  border-color: var(--site-rail);
+}

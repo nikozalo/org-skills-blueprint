@@ -1,0 +1,75 @@
+name: version bump required
+
+# Cowork's organization marketplace only syncs a plugin when a change that raises its version is
+# merged to main; changes without a higher version are ignored. Claude Code pins to the version
+# string too. So any change under plugins/<name>/ must raise that plugin's version, or nobody gets it.
+#
+# The comparison is tools/check_versions.mjs, by semver. Locally:
+#   git fetch origin main && node tools/check_versions.mjs origin/main
+#
+# Pull requests compare with the live main, fetched here, not the base the pull request recorded:
+# two open pull requests that both raise 0.7.0 to 0.7.1 each pass against their recorded base, and
+# the second one to merge ships nothing. Only the plugins the pull request itself changed are
+# checked, so a branch that is behind main does not fail for plugins it never touched.
+#
+# A pull request's check does not re-run when main moves. The push job catches what slips through:
+# after every push to main it compares the commit before with the commit after, and fails with an
+# error on the commit when a plugin changed without a higher version.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  pull-request:
+    name: Every changed plugin has a version above main
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Fetch the live main
+        run: git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+
+      - name: Compare with the live main
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node tools/check_versions.mjs origin/main "$HEAD_SHA"
+
+  main:
+    name: Every change on main raised its version
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Compare the commit before the push with the commit after
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+        run: |
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "main was just created; nothing to compare it with"; exit 0
+          fi
+          node tools/check_versions.mjs "$BEFORE" "$AFTER" --on-main

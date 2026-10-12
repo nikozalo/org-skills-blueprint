@@ -1,0 +1,30 @@
+---
+title: Voice check
+description: /acme-marketing:voice-check checks a draft against Acme's voice guide before it goes out.
+---
+
+# Voice check
+
+`/acme-marketing:voice-check` checks a draft against Acme's voice guide before it goes out: a web page, a post, a customer email, external slides. It finds what breaks the guide and suggests the smallest fix. You decide what to change.
+
+## Run it
+
+```txt
+/acme-marketing:voice-check launch-post.md
+```
+
+Give it a file, a Google Doc link or pasted text. In Cowork, asking whether a draft is on-brand starts it too.
+
+## What you get
+
+A result line, **Ready** or the number of findings, then a table: the exact words from your draft, the rule they break (such as V4, words to avoid), and a suggested fix. Anything the guide does not cover, such as a claim worth checking, is listed separately.
+
+The guide lives in the Acme Marketing plugin and the Marketing lead owns it. A rule that seems wrong is theirs to change: [Contribute](/contribute).
+
+## What it never does
+
+- Rewrite your whole draft, unless you ask after the check.
+- Publish, post or send anything.
+- Apply a rule that is not in the guide.
+
+Owner: the Marketing lead.

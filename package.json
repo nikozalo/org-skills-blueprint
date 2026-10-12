@@ -1,0 +1,17 @@
+{
+  "name": "acme-skills-checks",
+  "private": true,
+  "description": "The repository checks for the Acme Skills plugin marketplace. The docs site has its own package in docs/.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check:skills": "node tools/check_skills.mjs",
+    "check:data": "node tools/scan_data.mjs",
+    "check:versions": "node tools/check_versions.mjs"
+  },
+  "devDependencies": {
+    "yaml": "2.9.1"
+  }
+}

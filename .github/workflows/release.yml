@@ -1,0 +1,61 @@
+name: release tags
+
+# After every push to main, tag each plugin whose version changed as <plugin>-v<version>, for
+# example acme-v0.2.0, on the commit that shipped it. CHANGELOG.md says in plain words what each
+# version changed; the tags say which commit it was.
+#
+# Only this job may write to the repository, and only tags.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-tags
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    name: Tag changed plugin versions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Tag every plugin whose version changed
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+        run: |
+          set -euo pipefail
+          ver() { git show "$1:$2" 2>/dev/null | jq -r '.version // empty' 2>/dev/null || true; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for dir in $(git ls-tree -d --name-only "$AFTER" plugins/); do
+            plugin=${dir#plugins/}
+            manifest="$dir/.claude-plugin/plugin.json"
+            now=$(ver "$AFTER" "$manifest")
+            was=""
+            if [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+              was=$(ver "$BEFORE" "$manifest")
+            fi
+            if [ -z "$now" ] || [ "$now" = "$was" ]; then continue; fi
+
+            tag="$plugin-v$now"
+            if existing=$(git rev-parse -q --verify "refs/tags/$tag^{commit}"); then
+              if [ "$existing" != "$AFTER" ]; then
+                echo "::warning file=$manifest::$tag already exists on ${existing:0:7}; left as it is. A version number should be used once."
+              fi
+              continue
+            fi
+            git tag -a "$tag" -m "$plugin $now" "$AFTER"
+            git push origin "refs/tags/$tag"
+            echo "tagged $tag (${was:-new} -> $now)"
+          done

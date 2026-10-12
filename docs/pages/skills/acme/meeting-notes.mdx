@@ -1,0 +1,48 @@
+---
+title: Meeting notes
+description: Turn a meeting transcript into the standard Acme meeting record, with every decision and action item quoted.
+---
+
+# Meeting notes
+
+`/acme:meeting-notes` turns a meeting transcript into the standard Acme meeting record. Everything in it comes from the transcript, and every decision and action item carries a quote.
+
+## Run it
+
+```txt
+/acme:meeting-notes weekly-ops-sync.txt
+```
+
+Give it a file, a Google Doc link, pasted text, or a meeting in a transcription app you have connected. Use the transcript, not someone's summary: the record quotes what people said. In Cowork, sharing a transcript and asking for the action items starts it too.
+
+The first time, it asks where to save your records, and offers to keep the folder as a **My meeting records** line in your instructions.
+
+## What you get
+
+One Markdown file, `YYYY-MM-DD <title>.md`, in your records folder:
+
+```md
+# Weekly ops sync
+
+**2026-09-28**
+
+**Spoke:** <names>
+**Invited, did not speak:** <names>
+**Audience:** Internal: all attendees are from Acme
+**Source transcript:** <file name>
+
+## Summary
+## Decisions
+## Action items
+## Open questions
+```
+
+An action item needs a named owner and a real commitment, so **an empty action-item list is a normal result**. Near misses go under Open questions. The **Audience** line says who it recommends sending the record to: everyone invited, only the organiser when someone from outside Acme attended, or nobody for a meeting tagged `[confidential]`. Correct the record directly: it is the record.
+
+## What it never does
+
+- Share, send or post the record.
+- Record a decision or action item without a quote, or guess an owner or a due date.
+- Add analysis or next steps nobody said.
+
+Owner: the AI team.

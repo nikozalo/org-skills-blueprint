@@ -1,0 +1,105 @@
+---
+title: Maintainers
+description: The one-time organization setup, how the repository is laid out, how changes reach people, how to land a proposal, and how this site is built.
+---
+
+# Maintainers
+
+The repository `acme-org/acme-skills` is a Claude plugin marketplace. This page is for the organization owner, who sets it up once, and for the people who review and merge.
+
+## Set up the organization
+
+For an owner of Acme's Claude organization. Done once, for everyone. Members need no GitHub account: your GitHub access is checked once, then Cowork's own GitHub App keeps the plugins in sync.
+
+::::steps
+### Connect the repository
+In **Organization settings → Plugins & skills**, open **Marketplaces**, click **Add plugins**, then **Sync from GitHub**, and enter `acme-org/acme-skills`. Cowork and Skills must both be enabled for the organization.
+
+"Failed to add marketplace" usually means a marketplace with the same name, `acme-skills`, already exists in the account. Remove it, then add the organization's repository again.
+
+### Set who gets what
+Set every plugin to **Available to install**. People add the ones they need themselves: they search for **Acme** in **Customize → Plugins** in Cowork, or in `/plugin` in Claude Code.
+
+### Turn on automatic sync
+Cowork then syncs when a pull request that raises a plugin's version number is merged into the branch it follows.
+
+### Add the connectors the skills use
+Under **Organization settings → Connectors**, so members can connect them instead of seeing **Request**: Google Drive, for transcripts and drafts kept there.
+::::
+
+:::warning
+Keep the repository private. Cowork does not accept a public repository as an organization marketplace.
+:::
+
+### What the install settings do
+
+**Required** and **Installed by default** put a plugin in front of everyone; **Available to install** lists it for people to add themselves. The settings decide what people see, not who may read a plugin: anyone can add an available plugin and read its files. So a plugin holds rules and templates, never records or transcripts.
+
+## Layout
+
+| Path | What it is |
+|---|---|
+| `.claude-plugin/marketplace.json` | The plugins, each at `plugins/<name>` |
+| `plugins/<name>/.claude-plugin/plugin.json` | The plugin's name, version and description |
+| `plugins/<name>/skills/<skill>/SKILL.md` | One folder per skill |
+| `plugins/<name>/references/` | A team's rules, owned by the team, read by its skills |
+| `plugins/<name>/evals/` | Test cases, run by hand with `claude plugin eval` |
+| `docs/` | This site |
+
+## Every change bumps the version
+
+Every change under `plugins/<name>/` raises `version` in that plugin's `plugin.json` in the same pull request. Cowork syncs only when a pull request carrying a version bump is merged to `main`, and Claude Code pins to the same string. If a contributor's pull request fails the version check, add the bump yourself. Put what people will notice, in plain words, in the root `CHANGELOG.md`; the pull request template asks for it too.
+
+## Checks
+
+`.github/workflows/checks.yml` runs these on every pull request and every push to `main`. Run them yourself from the repository root first:
+
+```bash
+npm ci
+node tools/check_skills.mjs      # skill frontmatter
+node tools/scan_data.mjs         # no real data or secrets in a plugin
+git fetch origin main && node tools/check_versions.mjs origin/main   # a higher version for every plugin the branch changed
+claude plugin validate . --strict  # and once per plugin directory
+cd docs && bun run build && node scripts/check-words.mjs
+```
+
+`version-bump.yml` compares against the live `main`, and `release.yml` tags each new version on `main` as `<plugin>-v<version>`.
+
+## Landing a proposal folder
+
+People without repository access send `proposals/` folders in **#acme-ai**. To land one:
+
+1. Copy it into place, as below. Drop `PROPOSAL.md` and `MESSAGE.md`; keep `examples/`.
+2. Run the examples through the skill, and validate.
+3. Move the content of the folder's `docs.md` into this site as `docs/AUTHORING.md` says: a page, a sidebar line and a row on the Skills overview.
+4. Bump the version, and name the proposer in the pull request.
+
+| Folder | Lands in |
+|---|---|
+| `proposals/<name>/` | `plugins/<plugin>/skills/<name>/` |
+| `proposals/fix-<skill>.md` | The exact lines before and after: apply them and name the reporter |
+
+What each plugin requires of a proposal is in `plugins/acme/skills/contribute/plugins.md`.
+
+## Review
+
+Pull requests come from Claude Code: `/acme:contribute` opens them with `gh`, signed in with each contributor's own GitHub account. Contributors are added without merge rights ([Get GitHub access](/contribute/github-access)).
+
+Every change is read by a second person. `/acme:contribute` asks for review from the plugin's owner ([Who reviews what](/contribute#who-reviews-what)). Merge only after the owner approves, including on an owner's own rule change. Owners review with `/acme:contribute review <link>`.
+
+To try a change before pushing, add your checkout as a local marketplace (`/plugin marketplace add /path/to/acme-skills`), and remove it again before adding the GitHub one: both are named `acme-skills`.
+
+## This site
+
+[Vocs](https://vocs.dev) in `docs/`. `docs/AUTHORING.md` has the voice, the page model and the URL map; the sidebar is in `docs/vocs.config.ts`.
+
+```bash
+cd docs
+bun install
+bun run build          # fails on a dead link
+bun run check:words    # fails on a page over 1,500 words
+```
+
+Each build also zips every plugin for [Manual install](/install/manual), from the files on the branch it builds. The zips are never committed, so the downloads always match the plugins on `main`.
+
+The site can sit behind a shared password: `docs/middleware.ts` runs on Vercel, with the project's Root Directory set to `docs`, and shows a sign-in page before anything else. The password is the `DOCS_PASSWORD` environment variable in the Vercel project, never a file in the repository. On Vercel without it, the site answers 503 and serves nothing. Locally the gate is off.

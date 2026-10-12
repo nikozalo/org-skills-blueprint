@@ -1,0 +1,4 @@
+/* Global styles, loaded on every page (Vocs' userStyles). The chrome is styles/theme.css; the
+   pieces on pages (hero, cards, steps, callouts, tables, figures) are styles/site.css. */
+@import "../styles/theme.css";
+@import "../styles/site.css";

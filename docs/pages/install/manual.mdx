@@ -1,0 +1,76 @@
+---
+title: Manual install
+description: Download the Acme plugins as zip files and upload them yourself, for Claude Cowork and Claude Code, when Acme is not in the plugin search.
+---
+
+import { PluginDownload } from '#components/PluginDownload'
+
+# Manual install
+
+Download the Acme plugins as zip files and upload them to your Claude account yourself. Use this when the plugin search does not show Acme, or when you were asked to try a version before it reaches everyone. One upload covers Claude Cowork and Claude Code.
+
+If you can find Acme by searching in **Customize → Plugins**, add it there instead, as [Start here](/install) describes: those copies update themselves, these do not.
+
+:::warning
+Upload the plugins to your Acme Claude account, never a personal one. They hold Acme's internal context and rules.
+:::
+
+## Download
+
+| Plugin | Who needs it | Download |
+|---|---|---|
+| Acme (`acme`) | Everyone. Upload it first | <PluginDownload plugin="acme" /> |
+| Acme Marketing (`acme-marketing`) | Anyone who writes for Marketing | <PluginDownload plugin="acme-marketing" /> |
+
+The zips are built from the plugins each time this site is updated, so the version in the file name is the current one. Do not unzip them: you upload each file as it is.
+
+:::details[Safari gave you a folder, not a zip]
+Safari opens "safe" files after downloading them, which turns a zip into a folder. Right-click the folder in Finder, choose **Compress**, and upload the zip that appears. To stop it, turn off **Open "safe" files after downloading** in Safari's **Settings → General**.
+:::
+
+## Claude Cowork
+
+::::steps
+### Open Plugins
+In the Claude desktop app, open the **Cowork** tab, then **Customize → Plugins**.
+
+### Upload Acme
+Click **Add**, then **Upload plugin**, and choose the Acme zip.
+
+### Upload the others you need
+The same way, one at a time.
+
+### Check
+Start a new task and type `/acme`. The Acme skills are listed.
+::::
+
+Then [run `/acme:setup`](/install#run-acmesetup) once.
+
+No **Upload plugin** option? An organization owner can turn uploads off. Ask in **#acme-ai**.
+
+## Claude Code
+
+Claude Code loads the plugins you uploaded from your account, so there is nothing to install in it. `claude update` brings Claude Code up to date.
+
+::::steps
+### Upload the plugins
+As for Cowork above. Without the desktop app, upload them at [claude.ai/customize/plugins](https://claude.ai/customize/plugins) in a browser.
+
+### Use the same account
+Sign in to Claude Code with the account you uploaded to: `/status` shows the account, and `/login` switches it.
+
+### Load them
+Start Claude Code again, or type `/reload-plugins` in an open session. Type `/acme` to check: the skills are listed.
+::::
+
+Then run `/acme:setup` once in Claude Code too: it does not read Cowork's settings.
+
+## Updates
+
+These copies do not update themselves. When a new version is announced in **#acme-ai**:
+
+1. Download the new zip from this page.
+2. Remove the old copy: in **Customize → Plugins**, open the plugin, open its menu and choose **Remove**.
+3. Upload the new zip.
+
+When Acme appears in your plugin search, remove the uploaded copies and add Acme from the search, so you do not have two of each.

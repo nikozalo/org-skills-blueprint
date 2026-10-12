@@ -1,0 +1,18 @@
+{
+  "name": "acme-marketing",
+  "version": "0.1.0",
+  "displayName": "Acme Marketing",
+  "description": "Marketing's skills for Acme: /acme-marketing:voice-check checks a draft against Acme's voice guide and lists every line that breaks it, with a suggested fix. The guide lives in this plugin and the Marketing lead owns it.",
+  "author": {
+    "name": "Acme AI team"
+  },
+  "homepage": "https://github.com/acme-org/acme-skills",
+  "repository": "https://github.com/acme-org/acme-skills",
+  "keywords": [
+    "acme",
+    "marketing",
+    "brand",
+    "voice",
+    "copy"
+  ]
+}

@@ -1,0 +1,77 @@
+---
+title: Contribute
+description: Fix a skill that got something wrong, or propose a skill or a rule change. Claude drafts it, the owner reviews it, everyone gets it.
+---
+
+import { Figure } from '#components/Figure'
+import { ContributeLoop } from '#components/figures'
+
+# Contribute
+
+A skill is a text file in a shared repository, so contributing means changing a text file, and Claude does the writing. You never need to learn GitHub.
+
+<Figure caption="You notice, Claude drafts, the owner reviews, everyone gets it on the next update.">
+  <ContributeLoop />
+</Figure>
+
+::::steps
+### Keep the example
+Save what you gave the skill and what it produced, with names, amounts and personal details removed. Two or three real examples; a proposal without them is not reviewed.
+
+### Run /acme:contribute in Claude Code
+In the Code tab of the Claude desktop app. Cowork cannot send changes to GitHub: in Cowork, use [the folder route](#without-github-access) or open Claude Code. Claude asks a few questions, one at a time.
+
+### Read the draft
+Claude shows you every file, including the skill's page for this site, before anything leaves your computer. It goes out under your name.
+
+### Claude sends it
+With [GitHub access](/contribute/github-access), as a pull request, a proposed change. Without, as a folder you post in **#acme-ai**.
+::::
+
+## What to say to Claude
+
+| You want to | Say |
+|---|---|
+| Fix a skill that got something wrong | `/acme:contribute /acme:meeting-notes listed "we should look into X" as an action item. Nobody took it on.` |
+| Propose a new skill | `/acme:contribute I want a skill that turns a customer call transcript into a one-page summary and follow-ups` |
+| Change a rule you own | `/acme:contribute Marketing: add "world-class" to the words to avoid in the voice guide` |
+| Answer a reviewer | `/acme:contribute check my pull request <link>` |
+| Review a pull request | `/acme:contribute review <link>` |
+
+A page on this site that is wrong about a skill is fixed the same way: say which page and what it gets wrong.
+
+## What happens next
+
+- **A small, obvious fix** becomes a pull request. Anything larger, or a change to a rule you do not own, becomes an issue for the owner.
+- **The owner reviews it.** If they ask for changes, `/acme:contribute check my pull request` explains each request and makes the change with you, after you say yes.
+- **A maintainer merges it**, and everyone gets it on the next update. Claude never merges, closes or approves for you.
+- **A failing version check** on your pull request is not your mistake: a maintainer raises the version number before merging.
+
+## Without GitHub access
+
+Claude writes a `proposals/` folder with your proposal, its examples and a three-line message. Post it in **#acme-ai** on Slack. A maintainer opens the pull request and names you in it. This is a normal route, not a lesser one, and it is the one to use if you only have Cowork.
+
+## Who reviews what
+
+| Plugin | `/acme:contribute` asks for review from |
+|---|---|
+| `acme` | The AI team |
+| `acme-marketing` | The Marketing lead |
+
+A team's rules, such as Marketing's voice guide, are changed by their owner. Anyone else's idea for a rule goes to the owner as an issue.
+
+## New to GitHub?
+
+You do not have to answer on GitHub: ask Claude, in Claude Code. The emails GitHub sends link to the pull request.
+
+:::details[GitHub words]
+| Word | What it means here |
+|---|---|
+| Repository | The shared folder with every Acme skill, `acme-org/acme-skills`. Private |
+| Pull request | A proposed change, with a page to discuss and approve it. Nothing changes until it is merged |
+| Branch | A separate copy where your change waits while it is reviewed. Claude creates it |
+| Review | The owner approves, asks for changes, or comments |
+| Merge | Accepting the change. A maintainer does it, never you or Claude |
+| Issue | A note to an owner that something is wrong, when the fix is bigger than a few lines |
+| Files changed | The tab that shows the change: red lines out, green lines in |
+:::

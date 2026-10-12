@@ -1,0 +1,76 @@
+name: checks
+
+# Every pull request and every push to main runs the repository's checks. Each step runs locally
+# the same way; README.md, "Checks", lists the commands.
+#
+# Evals cost model calls and are run by hand before a merge that changes a skill; they are not
+# run here. The version check is its own workflow, version-bump.yml.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  plugins:
+    name: Plugins and skills
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      # A local check of the manifests, skills, agents and commands. It makes no API call and
+      # needs no sign-in or API key.
+      - name: Validate the marketplace and every plugin
+        run: |
+          fail=0
+          claude plugin validate . --strict || fail=1
+          for p in plugins/*/; do
+            claude plugin validate "$p" --strict || fail=1
+          done
+          exit $fail
+
+      - name: Install the check's dependency (yaml)
+        if: ${{ !cancelled() }}
+        run: npm ci
+
+      - name: Skill frontmatter as Cowork checks it on upload
+        if: ${{ !cancelled() }}
+        run: node tools/check_skills.mjs
+
+      - name: No real data or secrets in any plugin
+        if: ${{ !cancelled() }}
+        run: node tools/scan_data.mjs
+
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Build the docs (includes the dead-link check)
+        run: cd docs && bun install --frozen-lockfile && bun run build
+
+      - name: Every page within the word limit
+        if: ${{ !cancelled() }}
+        run: node docs/scripts/check-words.mjs

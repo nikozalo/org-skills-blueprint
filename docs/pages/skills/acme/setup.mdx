@@ -1,0 +1,28 @@
+---
+title: Setup
+description: /acme:setup gives Claude the shared Acme context and your role. Everyone runs it first.
+---
+
+# Setup
+
+`/acme:setup` puts the shared Acme context (what Acme is, the teams, where things live) and your role where Claude reads them at the start of every session. Everyone runs it first, and again when the shared context changes. It only runs when you type it.
+
+## Run it
+
+```txt
+/acme:setup
+```
+
+It asks one thing: your role. Step by step, in Cowork and in Claude Code: [Start here](/install#run-acmesetup).
+
+## What you get
+
+One block between two markers, with the shared context and a **My role** section. Skills add their own lines there when you first use them, such as **My meeting records**; a re-run keeps them. In Cowork you paste the block into your Global instructions. In Claude Code it shows you the block, asks, backs up `~/.claude/CLAUDE.md` and writes it.
+
+## What it never does
+
+- Changes anything in your instructions outside its own block.
+- Writes a placeholder for a question you skipped.
+- Touches a project's own `CLAUDE.md`.
+
+Owner: the AI team.

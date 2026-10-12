@@ -1,0 +1,34 @@
+---
+title: Acme Skills
+description: Shared Claude skills for Acme. Install them, see what each one does, and help make them better.
+layout: minimal
+content:
+  width: full
+outline: false
+showAskAi: false
+showFeedback: false
+showLogo: false
+---
+
+import { Cards, Card } from 'vocs'
+import { Hero } from '#components/Hero'
+
+<Hero />
+
+<div className="site-home">
+
+## Guides
+
+<p className="site-home__intro">The docs have three parts. Start with Getting started, then see what each skill does.</p>
+
+<div className="site-home__cards">
+
+<Cards>
+  <Card title="Getting started" description="What Acme Skills are, how to add them in Cowork or Claude Code, and tips for good results from Claude." to="/install" />
+  <Card title="Skills" description="Every Acme skill and plugin: what it is for, how to run it, and what it never does." to="/skills" />
+  <Card title="Contribute" description="Fix a skill that got something wrong, or propose a new one. Claude drafts it; the owner reviews it." to="/contribute" />
+</Cards>
+
+</div>
+
+</div>

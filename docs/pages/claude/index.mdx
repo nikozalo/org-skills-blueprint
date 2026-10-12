@@ -1,0 +1,115 @@
+---
+title: Tips for using Claude
+description: How to get good, consistent work from Claude at Acme. Sessions, handoffs, files, where instructions go, and what you may give it.
+---
+
+# Tips for using Claude
+
+Most of the difference between a good result and a poor one comes from a few habits, and most of those are about keeping Claude's context window clean. They apply in Claude Cowork and Claude Code alike; only the controls differ.
+
+## The context window
+
+Everything Claude can see while it works is its context window: the instructions it starts with, every message in the session (yours and its own), every file it has opened, and every result a connector or tool has sent back. It is Claude's working memory for one session, and it has a fixed size.
+
+| What | When it takes space |
+|---|---|
+| Your standing instructions, and the short descriptions of your skills and connectors | At the start of every session. A skill's full text loads only when it runs |
+| Files Claude opens, and text you paste | When Claude reads them. A long transcript or agreement is a large share |
+| Results from connectors, searches and web pages | Each time one comes back. These add up fastest |
+| The conversation | Every message, both ways, for as long as the session runs |
+
+:::info[The one thing to remember]
+Quality drops as the window fills, well before it is full. It shows up as Claude forgetting an earlier instruction or repeating a mistake you corrected, not as an error.
+:::
+
+## When it gets too big
+
+Watch for these signs:
+
+- Claude forgets an instruction you gave earlier in the session.
+- It repeats a mistake you already corrected, or you have corrected the same point twice.
+- It brings in details from an earlier, unrelated request.
+- Answers get vaguer, or it rereads files it has already read.
+- In Claude Code, `/context` shows most of the window in use.
+
+Sessions fill fastest when Claude reads many files or long documents, searches Drive, Notion or the web, or runs for hours of back-and-forth. Plan a handoff once `/context` shows the window about half full, and do not let work that matters run into automatic summarising.
+
+**Automatic summarising.** When the window is nearly full, Claude replaces the older part of the conversation with a summary and carries on. Whatever the summary leaves out is gone, and you do not see what was dropped: instructions you gave only in the chat are most at risk. That is why standing rules belong in your instructions or a file, not in the chat. In Cowork this happens on its own, with no command to see or start it; your controls are new tasks and handoff notes.
+
+## Compact, clear or hand off
+
+| Situation | Claude Cowork | Claude Code |
+|---|---|---|
+| Switching to unrelated work | Start a new task | `/clear` |
+| Same task, the window filling with reading you no longer need | Carry on, or hand off if quality drops | `/compact` and say what to keep |
+| Claude keeps getting it wrong, or you corrected it twice | Hand off, then a new task with a better request | Hand off, then `/clear` |
+| A plan or brief is written, or you want the work checked | Hand off, then a new task | Hand off, then `/clear` |
+| Work that spans days | Hand off at the end of each day | The same |
+
+`/compact` summarises now, on your terms: `/compact keep the list of changed files, the decisions and the open questions`. After it, ask Claude what rules it is following, and restate any it lost. `/clear` starts an empty conversation; the old one is saved, and `/resume` brings it back. `/rewind` goes back to an earlier message when a direction did not work. Start each task with a clear one-line request so you can find it again, and group related Cowork tasks in a project: they share its instructions, files and memory.
+
+## Hand off before you start fresh
+
+A new session knows nothing of the old one. A short handoff note carries the work across, and you read it before the next session starts.
+
+::::steps
+### Ask for the note
+In the session you are leaving, send:
+
+```txt
+Before we stop, write a handoff note in six short lines and save it as handoff.md in the working folder:
+Goal: what we are producing, and for whom.
+Decided: what we agreed, including any rules and limits.
+Ruled out: what we tried or rejected, and why.
+Files: the documents that matter, with their paths.
+Open: what is not working or not settled yet.
+Next: the very next step.
+```
+
+### Read it and fix it
+Check each line against what you know, and correct anything wrong or missing now. A note you checked beats a summary you did not.
+
+### Start the new session from it
+Start a new Cowork task, in the same project if you use one, or run `/clear` in Claude Code. Then send `Read handoff.md and continue from Next.`
+::::
+
+A handoff note carries the classification of what it summarises. Keep it in the same folder as the source material.
+
+## Give Claude the source
+
+- **Attach the document, or name it in the working folder.** Claude works from what it reads; a description of a document gets you a guess. A file can be read again later, while pasted text lives only in that session. In Claude Code, type `@` and the file name.
+- **One working folder per workstream**, not your whole Documents folder. Claude can only read and write in folders you connect, so a narrow folder limits both what it can reach and what it has to sift.
+- **Keep out** passwords, keys, seed phrases, personal records and anything more sensitive than the task needs. Keep backups of anything important: Claude can change files in the folder.
+- **Switch off what the task does not need:** connectors (in Cowork, the **+** menu of the message box) and web search.
+
+## Where instructions go
+
+Anything you would otherwise retype at the start of every session belongs in a standing place. Every line there loads into every session it reaches, so keep it short.
+
+| What | Claude Cowork | Claude Code |
+|---|---|---|
+| Your Acme block from `/acme:setup`, and your own preferences | **Settings → Cowork → Global instructions**. Reaches every task, scheduled tasks too | `~/.claude/CLAUDE.md`. Reaches every project on this computer |
+| Rules for one workstream | Project instructions | The project folder's `CLAUDE.md` |
+| Facts about the material in a folder | A `CLAUDE.md` at the top of the folder you select | The same file |
+| A procedure you repeat | A skill | A skill |
+
+- **Keep one copy of the Acme block.** `/acme:setup` updates only its own block, so a second copy in a project goes stale. Cowork does not read Claude Code's `~/.claude` folder: if you use both apps, run `/acme:setup` in each.
+- **Test every line.** Would removing it make Claude go wrong? If not, cut it.
+- **Facts and rules only.** A procedure with steps and a fixed shape of output belongs in a skill, and so does a prompt you keep pasting. If it would help others at Acme, [propose it](/contribute).
+- **A correction to one of the Acme skills** is a fix to the skill, not a line in your own instructions. [Contribute](/contribute) says how; the fix reaches everyone.
+- **Memory is Claude's notes, not your rules.** Put anything Claude must always follow in your instructions.
+
+## Only give Claude what you may
+
+- **Use Acme's Claude account** for Acme work, never a personal account of any AI tool.
+- **Share the least the task needs.** Passwords, keys and other people's personal records never go into a prompt.
+- **The same care covers what Claude reads** through a connector, a folder or a scheduled task, not only what you paste.
+- **If something went into the wrong tool,** tell whoever looks after security at Acme.
+
+## Check what leaves Acme
+
+AI output is a draft, not a source. Check every fact behind a real decision, above all legal, financial and security ones. A person reviews anything before it goes outside Acme, and confirms anything hard to undo: sending a message, publishing, deleting.
+
+## Call skills by name
+
+Type `/` (or click **+** in Cowork) and pick the skill, such as `/acme:meeting-notes`. Skills can also start on their own when a request matches them, but calling one by name removes the guess: you know which instructions Claude follows, and the output has the agreed shape.
